@@ -1,2 +1,2 @@
 # mpd_tray
-A system tray widget for mpd supports gtk, qt, and tk 
+A system tray widget for mpd written in go with gtk and appindicator
