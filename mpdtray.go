@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/dawidd6/go-appindicator"
@@ -48,12 +50,12 @@ func update(mpdConn *mpd.Client) bool {
 	return true
 }
 
-func main() {
-	conn, err := mpd.Dial("tcp", "localhost:6600")
+func indicator(port string) {
+	conn, err := mpd.Dial("tcp", port)
 	if err != nil {
+		fmt.Println("MPD port wrong, Usage: mpdtray <mpdPort>, default: 'localhost:6600'")
 		log.Fatalln(err)
 	}
-	defer conn.Close()
 
 	gtk.Init(nil)
 
@@ -132,4 +134,25 @@ func main() {
 	menu.ShowAll()
 
 	gtk.Main()
+}
+
+func main() {
+
+	args := os.Args
+
+	if strings.Contains(args[1], "help") {
+		fmt.Println("Usage:\n\nmpdtray help: print this help message\nmpdtray <port>: choose what port mpd is on, defualt localhost:6600\n\nif no ip is defined it defaults to localhost.\nexample: mpdtray 4.4.4.4:6666 would be 4.4.4.4:6666\nexample: mpdtray 6666 would be localhost:6666")
+		return
+	}
+
+	mpdPort := "localhost:6600"
+	if len(args) != 1 {
+		if strings.Contains(args[1], ":") {
+			mpdPort = args[1]
+		} else {
+			mpdPort = "localhost:" + args[1]
+		}
+	}
+
+	indicator(mpdPort)
 }
