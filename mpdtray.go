@@ -140,13 +140,13 @@ func main() {
 
 	args := os.Args
 
-	if strings.Contains(args[1], "help") {
-		fmt.Println("Usage:\n\nmpdtray help: print this help message\nmpdtray <port>: choose what port mpd is on, defualt localhost:6600\n\nif no ip is defined it defaults to localhost.\nexample: mpdtray 4.4.4.4:6666 would be 4.4.4.4:6666\nexample: mpdtray 6666 would be localhost:6666")
-		return
-	}
-
 	mpdPort := "localhost:6600"
 	if len(args) != 1 {
+		if strings.Contains(args[1], "help") {
+			fmt.Println("Usage:\n\nmpdtray help: print this help message\nmpdtray <port>: choose what port mpd is on, defualt localhost:6600\n\nif no ip is defined it defaults to localhost.\nexample: mpdtray 4.4.4.4:6666 would be 4.4.4.4:6666\nexample: mpdtray 6666 would be localhost:6666")
+			return
+		}
+
 		if strings.Contains(args[1], ":") {
 			mpdPort = args[1]
 		} else {
