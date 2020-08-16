@@ -15,6 +15,7 @@ import (
 var status mpd.Attrs = nil
 var songNameItem *gtk.MenuItem = nil
 var pausedItem *gtk.CheckMenuItem = nil
+var randItem *gtk.CheckMenuItem = nil
 
 func update(mpdConn *mpd.Client) bool {
 	var err error = nil
@@ -28,11 +29,14 @@ func update(mpdConn *mpd.Client) bool {
 		log.Fatalln(err)
 	}
 
-	songName := song["file"]
-	songNameSplit := strings.Split(songName, "/")
-	songName = songNameSplit[len(songNameSplit)-1]
-	songNameSplit = strings.Split(songName, ".")
-	songName = songNameSplit[0]
+	songName := song["Title"]
+	if songName == "" {
+		songName = song["file"]
+		songNameSplit := strings.Split(songName, "/")
+		songName = songNameSplit[len(songNameSplit)-1]
+		songNameSplit = strings.Split(songName, ".")
+		songName = songNameSplit[0]
+	}
 
 	runes := []rune(songName)
 	if len(runes) > 20 {
@@ -42,7 +46,7 @@ func update(mpdConn *mpd.Client) bool {
 	songNameItem.SetLabel(songName)
 
 	if status["state"] == "play" {
-		pausedItem.SetStateFlags(gtk.STATE_FLAG_NORMAL, true)
+		pausedItem.SetStateFlags(gtk.STATE_FLAG_INCONSISTENT, true)
 	} else {
 		pausedItem.SetStateFlags(gtk.STATE_FLAG_CHECKED, true)
 	}
@@ -89,9 +93,9 @@ func indicator(port string) {
 		log.Fatal(err)
 	}
 
-	update(conn)
 	glib.TimeoutAdd(5000, update, conn)
 
+	update(conn)
 	indicator := appindicator.New("mpd_tray", "mpd", appindicator.CategoryApplicationStatus)
 	indicator.SetTitle("mpd_tray")
 	indicator.SetLabel("MPD", "")
